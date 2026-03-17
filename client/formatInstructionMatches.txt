@@ -1,0 +1,449 @@
+﻿
+node_modules\leaflet-routing-machine\dist\leaflet-routing-machine.js:16352:		
+formatInstruction: function(instr, i) {
+node_modules\leaflet-routing-machine\dist\leaflet-routing-machine.js:16854:				
+text = this._formatter.formatInstruction(instr, i);
+node_modules\leaflet-routing-machine\dist\leaflet-routing-machine.min.js:15:;th
+is._pendingRequest=this._router.route(wps,function(err,routes){this._pendingReq
+uest=null;if(options.callback){return options.callback.call(this,err,routes)}if
+(ts===this._requestCount){this._clearLines();this._clearAlts();if(err&&err.type
+!=="abort"){this.fire("routingerror",{error:err});return}routes.forEach(functio
+n(route,i){route.routesIndex=i});if(!options.geometryOnly){this.fire("routesfou
+nd",{waypoints:wps,routes:routes});this.setAlternatives(routes)}else{var select
+edRoute=routes.splice(0,1)[0];this._routeSelected({route:selectedRoute,alternat
+ives:routes})}}},this,options)}},_clearLines:function(){if(this._line){this._ma
+p.removeLayer(this._line);delete 
+this._line}if(this._alternatives&&this._alternatives.length){for(var i in this.
+_alternatives){this._map.removeLayer(this._alternatives[i])}this._alternatives=
+[]}}})})()}).call(this,typeof global!=="undefined"?global:typeof 
+self!=="undefined"?self:typeof window!=="undefined"?window:{})},{"./itinerary":
+55,"./line":56,"./osrm-v1":59,"./plan":60}],50:[function(_dereq_,module,exports
+){(function(global){(function(){"use strict";var L=typeof 
+window!=="undefined"?window["L"]:typeof global!=="undefined"?global["L"]:null;m
+odule.exports=L.Control.extend({options:{header:"Routing 
+error",formatMessage:function(error){if(error.status<0){return"Calculating the 
+route caused an error. Technical description follows: 
+<code><pre>"+error.message+"</pre></code"}else{return"The route could not be 
+calculated. "+error.message}}},initialize:function(routingControl,options){L.Co
+ntrol.prototype.initialize.call(this,options);routingControl.on("routingerror",
+L.bind(function(e){if(this._element){this._element.children[1].innerHTML=this.o
+ptions.formatMessage(e.error);this._element.style.visibility="visible"}},this))
+.on("routingstart",L.bind(function(){if(this._element){this._element.style.visi
+bility="hidden"}},this))},onAdd:function(){var 
+header,message;this._element=L.DomUtil.create("div","leaflet-bar leaflet-routin
+g-error");this._element.style.visibility="hidden";header=L.DomUtil.create("h3",
+null,this._element);message=L.DomUtil.create("span",null,this._element);header.
+innerHTML=this.options.header;return this._element},onRemove:function(){delete 
+this._element}})})()}).call(this,typeof global!=="undefined"?global:typeof 
+self!=="undefined"?self:typeof window!=="undefined"?window:{})},{}],51:[functio
+n(_dereq_,module,exports){(function(global){(function(){"use strict";var 
+L=typeof window!=="undefined"?window["L"]:typeof 
+global!=="undefined"?global["L"]:null;var Localization=_dereq_("./localization"
+);module.exports=L.Class.extend({options:{units:"metric",unitNames:null,languag
+e:"en",roundingSensitivity:1,distanceTemplate:"{value} 
+{unit}"},initialize:function(options){L.setOptions(this,options);var langs=L.Ut
+il.isArray(this.options.language)?this.options.language:[this.options.language,
+"en"];this._localization=new 
+Localization(langs)},formatDistance:function(d,sensitivity){var un=this.options
+.unitNames||this._localization.localize("units"),simpleRounding=sensitivity<=0,
+round=simpleRounding?function(v){return v}:L.bind(this._round,this),v,yards,dat
+a,pow10;if(this.options.units==="imperial"){yards=d/.9144;if(yards>=1e3){data={
+value:round(d/1609.344,sensitivity),unit:un.miles}}else{data={value:round(yards
+,sensitivity),unit:un.yards}}}else{v=round(d,sensitivity);data={value:v>=1e3?v/
+1e3:v,unit:v>=1e3?un.kilometers:un.meters}}if(simpleRounding){data.value=data.v
+alue.toFixed(-sensitivity)}return L.Util.template(this.options.distanceTemplate
+,data)},_round:function(d,sensitivity){var s=sensitivity||this.options.rounding
+Sensitivity,pow10=Math.pow(10,(Math.floor(d/s)+"").length-1),r=Math.floor(d/pow
+10),p=r>5?pow10:pow10/2;return Math.round(d/p)*p},formatTime:function(t){var un
+=this.options.unitNames||this._localization.localize("units");t=Math.round(t/30
+)*30;if(t>86400){return Math.round(t/3600)+" "+un.hours}else if(t>3600){return 
+Math.floor(t/3600)+" "+un.hours+" "+Math.round(t%3600/60)+" "+un.minutes}else 
+if(t>300){return Math.round(t/60)+" "+un.minutes}else if(t>60){return 
+Math.floor(t/60)+" "+un.minutes+(t%60!==0?" "+t%60+" 
+"+un.seconds:"")}else{return t+" "+un.seconds}},formatInstruction:function(inst
+r,i){if(instr.text===undefined){return this.capitalize(L.Util.template(this._ge
+tInstructionTemplate(instr,i),L.extend({},instr,{exitStr:instr.exit?this._local
+ization.localize("formatOrder")(instr.exit):"",dir:this._localization.localize(
+["directions",instr.direction]),modifier:this._localization.localize(["directio
+ns",instr.modifier])})))}else{return instr.text}},getIconName:function(instr,i)
+{switch(instr.type){case"Head":if(i===0){return"depart"}break;case"WaypointReac
+hed":return"via";case"Roundabout":return"enter-roundabout";case"DestinationReac
+hed":return"arrive"}switch(instr.modifier){case"Straight":return"continue";case
+"SlightRight":return"bear-right";case"Right":return"turn-right";case"SharpRight
+":return"sharp-right";case"TurnAround":case"Uturn":return"u-turn";case"SharpLef
+t":return"sharp-left";case"Left":return"turn-left";case"SlightLeft":return"bear
+-left"}},capitalize:function(s){return s.charAt(0).toUpperCase()+s.substring(1)
+},_getInstructionTemplate:function(instr,i){var type=instr.type==="Straight"?i=
+==0?"Head":"Continue":instr.type,strings=this._localization.localize(["instruct
+ions",type]);if(!strings){strings=[this._localization.localize(["directions",ty
+pe])," "+this._localization.localize(["instructions","Onto"])]}return strings[0
+]+(strings.length>1&&instr.road?strings[1]:"")}})})()}).call(this,typeof 
+global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="und
+efined"?window:{})},{"./localization":57}],52:[function(_dereq_,module,exports)
+{(function(global){(function(){"use strict";var L=typeof 
+window!=="undefined"?window["L"]:typeof 
+global!=="undefined"?global["L"]:null;var 
+Autocomplete=_dereq_("./autocomplete");var 
+Localization=_dereq_("./localization");function selectInputText(input){if(input
+.setSelectionRange){input.setSelectionRange(0,9999)}else{input.select()}}module
+.exports=L.Class.extend({includes:typeof L.Evented!=="undefined"&&L.Evented.pro
+totype||L.Mixin.Events,options:{createGeocoder:function(i,nWps,options){var con
+tainer=L.DomUtil.create("div","leaflet-routing-geocoder"),input=L.DomUtil.creat
+e("input","",container),remove=options.addWaypoints?L.DomUtil.create("span","le
+aflet-routing-remove-waypoint",container):undefined;input.disabled=!options.add
+Waypoints;return{container:container,input:input,closeButton:remove}},geocoderP
+laceholder:function(i,numberWaypoints,geocoderElement){var l=new 
+Localization(geocoderElement.options.language).localize("ui");return i===0?l.st
+artPlaceholder:i<numberWaypoints-1?L.Util.template(l.viaPlaceholder,{viaNumber:
+i}):l.endPlaceholder},geocoderClass:function(){return""},waypointNameFallback:f
+unction(latLng){var ns=latLng.lat<0?"S":"N",ew=latLng.lng<0?"W":"E",lat=(Math.r
+ound(Math.abs(latLng.lat)*1e4)/1e4).toString(),lng=(Math.round(Math.abs(latLng.
+lng)*1e4)/1e4).toString();return ns+lat+", "+ew+lng},maxGeocoderTolerance:200,a
+utocompleteOptions:{},language:"en"},initialize:function(wp,i,nWps,options){L.s
+etOptions(this,options);var g=this.options.createGeocoder(i,nWps,this.options),
+closeButton=g.closeButton,geocoderInput=g.input;geocoderInput.setAttribute("pla
+ceholder",this.options.geocoderPlaceholder(i,nWps,this));geocoderInput.classNam
+e=this.options.geocoderClass(i,nWps);this._element=g;this._waypoint=wp;this.upd
+ate();geocoderInput.value=wp.name;L.DomEvent.addListener(geocoderInput,"click",
+function(){selectInputText(this)},geocoderInput);if(closeButton){L.DomEvent.add
+Listener(closeButton,"click",function(){this.fire("delete",{waypoint:this._wayp
+oint})},this)}new Autocomplete(geocoderInput,function(r){geocoderInput.value=r.
+name;wp.name=r.name;wp.latLng=r.center;this.fire("geocoded",{waypoint:wp,value:
+r})},this,L.extend({resultFn:this.options.geocoder.geocode,resultContext:this.o
+ptions.geocoder,autocompleteFn:this.options.geocoder.suggest,autocompleteContex
+t:this.options.geocoder},this.options.autocompleteOptions))},getContainer:funct
+ion(){return this._element.container},setValue:function(v){this._element.input.
+value=v},update:function(force){var wp=this._waypoint,wpCoords;wp.name=wp.name|
+|"";if(wp.latLng&&(force||!wp.name)){wpCoords=this.options.waypointNameFallback
+(wp.latLng);if(this.options.geocoder&&this.options.geocoder.reverse){this.optio
+ns.geocoder.reverse(wp.latLng,67108864,function(rs){if(rs.length>0&&rs[0].cente
+r.distanceTo(wp.latLng)<this.options.maxGeocoderTolerance){wp.name=rs[0].name}e
+lse{wp.name=wpCoords}this._update()},this)}else{wp.name=wpCoords;this._update()
+}}},focus:function(){var input=this._element.input;input.focus();selectInputTex
+t(input)},_update:function(){var wp=this._waypoint,value=wp&&wp.name?wp.name:""
+;this.setValue(value);this.fire("reversegeocoded",{waypoint:wp,value:value})}})
+})()}).call(this,typeof global!=="undefined"?global:typeof 
+self!=="undefined"?self:typeof window!=="undefined"?window:{})},{"./autocomplet
+e":48,"./localization":57}],53:[function(_dereq_,module,exports){(function(glob
+al){var L=typeof window!=="undefined"?window["L"]:typeof global!=="undefined"?g
+lobal["L"]:null,Control=_dereq_("./control"),Itinerary=_dereq_("./itinerary"),L
+ine=_dereq_("./line"),OSRMv1=_dereq_("./osrm-v1"),Plan=_dereq_("./plan"),Waypoi
+nt=_dereq_("./waypoint"),Autocomplete=_dereq_("./autocomplete"),Formatter=_dere
+q_("./formatter"),GeocoderElement=_dereq_("./geocoder-element"),Localization=_d
+ereq_("./localization"),ItineraryBuilder=_dereq_("./itinerary-builder"),Mapbox=
+_dereq_("./mapbox"),ErrorControl=_dereq_("./error-control");L.routing={control:
+function(options){return new 
+Control(options)},itinerary:function(options){return 
+Itinerary(options)},line:function(route,options){return new 
+Line(route,options)},plan:function(waypoints,options){return new 
+Plan(waypoints,options)},waypoint:function(latLng,name,options){return new 
+Waypoint(latLng,name,options)},osrmv1:function(options){return new 
+OSRMv1(options)},localization:function(options){return new 
+Localization(options)},formatter:function(options){return new 
+Formatter(options)},geocoderElement:function(wp,i,nWps,plan){return new L.Routi
+ng.GeocoderElement(wp,i,nWps,plan)},itineraryBuilder:function(options){return 
+new ItineraryBuilder(options)},mapbox:function(accessToken,options){return new 
+Mapbox(accessToken,options)},errorControl:function(routingControl,options){retu
+rn new ErrorControl(routingControl,options)},autocomplete:function(elem,callbac
+k,context,options){return new Autocomplete(elem,callback,context,options)}};mod
+ule.exports=L.Routing={Control:Control,Itinerary:Itinerary,Line:Line,OSRMv1:OSR
+Mv1,Plan:Plan,Waypoint:Waypoint,Autocomplete:Autocomplete,Formatter:Formatter,G
+eocoderElement:GeocoderElement,Localization:Localization,Formatter:Formatter,It
+ineraryBuilder:ItineraryBuilder,control:L.routing.control,itinerary:L.routing.i
+tinerary,line:L.routing.line,plan:L.routing.plan,waypoint:L.routing.waypoint,os
+rmv1:L.routing.osrmv1,geocoderElement:L.routing.geocoderElement,mapbox:L.routin
+g.mapbox,errorControl:L.routing.errorControl}}).call(this,typeof 
+global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="und
+efined"?window:{})},{"./autocomplete":48,"./control":49,"./error-control":50,".
+/formatter":51,"./geocoder-element":52,"./itinerary":55,"./itinerary-builder":5
+4,"./line":56,"./localization":57,"./mapbox":58,"./osrm-v1":59,"./plan":60,"./w
+aypoint":61}],54:[function(_dereq_,module,exports){(function(global){(function(
+){"use strict";var L=typeof window!=="undefined"?window["L"]:typeof global!=="u
+ndefined"?global["L"]:null;module.exports=L.Class.extend({options:{containerCla
+ssName:""},initialize:function(options){L.setOptions(this,options)},createConta
+iner:function(className){var table=L.DomUtil.create("table",(className||"")+" "
++this.options.containerClassName),colgroup=L.DomUtil.create("colgroup","",table
+);L.DomUtil.create("col","leaflet-routing-instruction-icon",colgroup);L.DomUtil
+.create("col","leaflet-routing-instruction-text",colgroup);L.DomUtil.create("co
+l","leaflet-routing-instruction-distance",colgroup);return 
+table},createStepsContainer:function(){return L.DomUtil.create("tbody","")},cre
+ateStep:function(text,distance,icon,steps){var row=L.DomUtil.create("tr","",ste
+ps),span,td;td=L.DomUtil.create("td","",row);span=L.DomUtil.create("span","leaf
+let-routing-icon leaflet-routing-icon-"+icon,td);td.appendChild(span);td=L.DomU
+til.create("td","",row);td.appendChild(document.createTextNode(text));td=L.DomU
+til.create("td","",row);td.appendChild(document.createTextNode(distance));retur
+n row}})})()}).call(this,typeof global!=="undefined"?global:typeof 
+self!=="undefined"?self:typeof window!=="undefined"?window:{})},{}],55:[functio
+n(_dereq_,module,exports){(function(global){(function(){"use strict";var 
+L=typeof window!=="undefined"?window["L"]:typeof 
+global!=="undefined"?global["L"]:null;var Formatter=_dereq_("./formatter");var 
+ItineraryBuilder=_dereq_("./itinerary-builder");module.exports=L.Control.extend
+({includes:typeof L.Evented!=="undefined"&&L.Evented.prototype||L.Mixin.Events,
+options:{pointMarkerStyle:{radius:5,color:"#03f",fillColor:"white",opacity:1,fi
+llOpacity:.7},summaryTemplate:"<h2>{name}</h2><h3>{distance}, {time}</h3>",time
+Template:"{time}",containerClassName:"",alternativeClassName:"",minimizedClassN
+ame:"",itineraryClassName:"",totalDistanceRoundingSensitivity:-1,show:true,coll
+apsible:undefined,collapseBtn:function(itinerary){var collapseBtn=L.DomUtil.cre
+ate("span",itinerary.options.collapseBtnClass);L.DomEvent.on(collapseBtn,"click
+",itinerary._toggle,itinerary);itinerary._container.insertBefore(collapseBtn,it
+inerary._container.firstChild)},collapseBtnClass:"leaflet-routing-collapse-btn"
+},initialize:function(options){L.setOptions(this,options);this._formatter=this.
+options.formatter||new Formatter(this.options);this._itineraryBuilder=this.opti
+ons.itineraryBuilder||new ItineraryBuilder({containerClassName:this.options.iti
+neraryClassName})},onAdd:function(map){var collapsible=this.options.collapsible
+;collapsible=collapsible||collapsible===undefined&&map.getSize().x<=640;this._c
+ontainer=L.DomUtil.create("div","leaflet-routing-container leaflet-bar 
+"+(!this.options.show?"leaflet-routing-container-hide 
+":"")+(collapsible?"leaflet-routing-collapsible ":"")+this.options.containerCla
+ssName);this._altContainer=this.createAlternativesContainer();this._container.a
+ppendChild(this._altContainer);L.DomEvent.disableClickPropagation(this._contain
+er);L.DomEvent.addListener(this._container,"mousewheel",function(e){L.DomEvent.
+stopPropagation(e)});if(collapsible){this.options.collapseBtn(this)}return this
+._container},onRemove:function(){},createAlternativesContainer:function(){retur
+n L.DomUtil.create("div","leaflet-routing-alternatives-container")},setAlternat
+ives:function(routes){var i,alt,altDiv;this._clearAlts();this._routes=routes;fo
+r(i=0;i<this._routes.length;i++){alt=this._routes[i];altDiv=this._createAlterna
+tive(alt,i);this._altContainer.appendChild(altDiv);this._altElements.push(altDi
+v)}this._selectRoute({route:this._routes[0],alternatives:this._routes.slice(1)}
+);return this},show:function(){L.DomUtil.removeClass(this._container,"leaflet-r
+outing-container-hide")},hide:function(){L.DomUtil.addClass(this._container,"le
+aflet-routing-container-hide")},_toggle:function(){var collapsed=L.DomUtil.hasC
+lass(this._container,"leaflet-routing-container-hide");this[collapsed?"show":"h
+ide"]()},_createAlternative:function(alt,i){var 
+altDiv=L.DomUtil.create("div","leaflet-routing-alt 
+"+this.options.alternativeClassName+(i>0?" leaflet-routing-alt-minimized "+this
+.options.minimizedClassName:"")),template=this.options.summaryTemplate,data=L.e
+xtend({name:alt.name,distance:this._formatter.formatDistance(alt.summary.totalD
+istance,this.options.totalDistanceRoundingSensitivity),time:this._formatter.for
+matTime(alt.summary.totalTime)},alt);altDiv.innerHTML=typeof template==="functi
+on"?template(data):L.Util.template(template,data);L.DomEvent.addListener(altDiv
+,"click",this._onAltClicked,this);this.on("routeselected",this._selectAlt,this)
+;altDiv.appendChild(this._createItineraryContainer(alt));return 
+altDiv},_clearAlts:function(){var el=this._altContainer;while(el&&el.firstChild
+){el.removeChild(el.firstChild)}this._altElements=[]},_createItineraryContainer
+:function(r){var container=this._itineraryBuilder.createContainer(),steps=this.
+_itineraryBuilder.createStepsContainer(),i,instr,step,distance,text,icon;contai
+ner.appendChild(steps);for(i=0;i<r.instructions.length;i++){instr=r.instruction
+s[i];text=this._formatter.formatInstruction(instr,i);distance=this._formatter.f
+ormatDistance(instr.distance);icon=this._formatter.getIconName(instr,i);step=th
+is._itineraryBuilder.createStep(text,distance,icon,steps);if(instr.index){this.
+_addRowListeners(step,r.coordinates[instr.index])}}return container},_addRowLis
+teners:function(row,coordinate){L.DomEvent.addListener(row,"mouseover",function
+(){this._marker=L.circleMarker(coordinate,this.options.pointMarkerStyle).addTo(
+this._map)},this);L.DomEvent.addListener(row,"mouseout",function(){if(this._mar
+ker){this._map.removeLayer(this._marker);delete this._marker}},this);L.DomEvent
+.addListener(row,"click",function(e){this._map.panTo(coordinate);L.DomEvent.sto
+pPropagation(e)},this)},_onAltClicked:function(e){var altElem=e.target||window.
+event.srcElement;while(!L.DomUtil.hasClass(altElem,"leaflet-routing-alt")){altE
+lem=altElem.parentElement}var j=this._altElements.indexOf(altElem);var 
+alts=this._routes.slice();var route=alts.splice(j,1)[0];this.fire("routeselecte
+d",{route:route,alternatives:alts})},_selectAlt:function(e){var altElem,j,n,cla
+ssFn;altElem=this._altElements[e.route.routesIndex];if(L.DomUtil.hasClass(altEl
+em,"leaflet-routing-alt-minimized")){for(j=0;j<this._altElements.length;j++){n=
+this._altElements[j];classFn=j===e.route.routesIndex?"removeClass":"addClass";L
+.DomUtil[classFn](n,"leaflet-routing-alt-minimized");if(this.options.minimizedC
+lassName){L.DomUtil[classFn](n,this.options.minimizedClassName)}if(j!==e.route.
+routesIndex)n.scrollTop=0}}L.DomEvent.stop(e)},_selectRoute:function(routes){if
+(this._marker){this._map.removeLayer(this._marker);delete 
+this._marker}this.fire("routeselected",routes)}})})()}).call(this,typeof 
+global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="und
+efined"?window:{})},{"./formatter":51,"./itinerary-builder":54}],56:[function(_
+dereq_,module,exports){(function(global){(function(){"use strict";var L=typeof 
+window!=="undefined"?window["L"]:typeof global!=="undefined"?global["L"]:null;m
+odule.exports=L.LayerGroup.extend({includes:typeof L.Evented!=="undefined"&&L.E
+vented.prototype||L.Mixin.Events,options:{styles:[{color:"black",opacity:.15,we
+ight:9},{color:"white",opacity:.8,weight:6},{color:"red",opacity:1,weight:2}],m
+issingRouteStyles:[{color:"black",opacity:.15,weight:7},{color:"white",opacity:
+.6,weight:4},{color:"gray",opacity:.8,weight:2,dashArray:"7,12"}],addWaypoints:
+true,extendToWaypoints:true,missingRouteTolerance:10},initialize:function(route
+,options){L.setOptions(this,options);L.LayerGroup.prototype.initialize.call(thi
+s,options);this._route=route;if(this.options.extendToWaypoints){this._extendToW
+aypoints()}this._addSegment(route.coordinates,this.options.styles,this.options.
+addWaypoints)},getBounds:function(){return 
+L.latLngBounds(this._route.coordinates)},_findWaypointIndices:function(){var wp
+s=this._route.inputWaypoints,indices=[],i;for(i=0;i<wps.length;i++){indices.pus
+h(this._findClosestRoutePoint(wps[i].latLng))}return 
+indices},_findClosestRoutePoint:function(latlng){var minDist=Number.MAX_VALUE,m
+inIndex,i,d;for(i=this._route.coordinates.length-1;i>=0;i--){d=latlng.distanceT
+o(this._route.coordinates[i]);if(d<minDist){minIndex=i;minDist=d}}return 
+minIndex},_extendToWaypoints:function(){var wps=this._route.inputWaypoints,wpIn
+dices=this._getWaypointIndices(),i,wpLatLng,routeCoord;for(i=0;i<wps.length;i++
+){wpLatLng=wps[i].latLng;routeCoord=L.latLng(this._route.coordinates[wpIndices[
+i]]);if(wpLatLng.distanceTo(routeCoord)>this.options.missingRouteTolerance){thi
+s._addSegment([wpLatLng,routeCoord],this.options.missingRouteStyles)}}},_addSeg
+ment:function(coords,styles,mouselistener){var i,pl;for(i=0;i<styles.length;i++
+){pl=L.polyline(coords,styles[i]);this.addLayer(pl);if(mouselistener){pl.on("mo
+usedown",this._onLineTouched,this)}}},_findNearestWpBefore:function(i){var wpIn
+dices=this._getWaypointIndices(),j=wpIndices.length-1;while(j>=0&&wpIndices[j]>
+i){j--}return j},_onLineTouched:function(e){var afterIndex=this._findNearestWpB
+efore(this._findClosestRoutePoint(e.latlng));this.fire("linetouched",{afterInde
+x:afterIndex,latlng:e.latlng});L.DomEvent.stop(e)},_getWaypointIndices:function
+(){if(!this._wpIndices){this._wpIndices=this._route.waypointIndices||this._find
+WaypointIndices()}return this._wpIndices}})})()}).call(this,typeof 
+global!=="undefined"?global:typeof self!=="undefined"?self:typeof window!=="und
+efined"?window:{})},{}],57:[function(_dereq_,module,exports){(function(){"use 
+strict";var spanish={directions:{N:"norte",NE:"noreste",E:"este",SE:"sureste",S
+:"sur",SW:"suroeste",W:"oeste",NW:"noroeste",SlightRight:"leve giro a la 
+derecha",Right:"derecha",SharpRight:"giro pronunciado a la 
+derecha",SlightLeft:"leve giro a la 
+izquierda",Left:"izquierda",SharpLeft:"giro pronunciado a la 
+izquierda",Uturn:"media vuelta"},instructions:{Head:["Derecho {dir}"," sobre 
+{road}"],Continue:["Continuar {dir}"," en {road}"],TurnAround:["Dar 
+vuelta"],WaypointReached:["Llegó a un punto del camino"],Roundabout:["Tomar 
+{exitStr} salida en la rotonda"," en {road}"],DestinationReached:["Llegada a 
+destino"],Fork:["En el cruce gira a {modifier}"," hacia 
+{road}"],Merge:["Incorpórate {modifier}"," hacia {road}"],OnRamp:["Gira 
+{modifier} en la salida"," hacia {road}"],OffRamp:["Toma la salida 
+{modifier}"," hacia {road}"],EndOfRoad:["Gira {modifier} al final de la 
+carretera"," hacia {road}"],Onto:"hacia 
+{road}"},formatOrder:function(n){return 
+n+"º"},ui:{startPlaceholder:"Inicio",viaPlaceholder:"Via {viaNumber}",endPlaceh
+older:"Destino"},units:{meters:"m",kilometers:"km",yards:"yd",miles:"mi",hours:
+"h",minutes:"min",seconds:"s"}};L.Routing=L.Routing||{};var Localization=L.Clas
+s.extend({initialize:function(langs){this._langs=L.Util.isArray(langs)?langs.sl
+ice():[langs,"en"];for(var i=0,l=this._langs.length;i<l;i++){var generalizedCod
+e=/([A-Za-z]+)/.exec(this._langs[i])[1];if(!Localization[this._langs[i]]){if(Lo
+calization[generalizedCode]){this._langs[i]=generalizedCode}else{throw new 
+Error('No localization for language 
+"'+this._langs[i]+'".')}}}},localize:function(keys){var 
+dict,key,value;keys=L.Util.isArray(keys)?keys:[keys];for(var 
+i=0,l=this._langs.length;i<l;i++){dict=Localization[this._langs[i]];for(var j=0
+,nKeys=keys.length;dict&&j<nKeys;j++){key=keys[j];value=dict[key];dict=value}if
+(value){return value}}}});module.exports=L.extend(Localization,{en:{directions:
+{N:"north",NE:"northeast",E:"east",SE:"southeast",S:"south",SW:"southwest",W:"w
+est",NW:"northwest",SlightRight:"slight right",Right:"right",SharpRight:"sharp 
+right",SlightLeft:"slight left",Left:"left",SharpLeft:"sharp left",Uturn:"Turn 
+around"},instructions:{Head:["Head {dir}"," on {road}"],Continue:["Continue 
+{dir}"],TurnAround:["Turn around"],WaypointReached:["Waypoint 
+reached"],Roundabout:["Take the {exitStr} exit in the roundabout"," onto 
+{road}"],DestinationReached:["Destination reached"],Fork:["At the fork, turn 
+{modifier}"," onto {road}"],Merge:["Merge {modifier}"," onto 
+{road}"],OnRamp:["Turn {modifier} on the ramp"," onto {road}"],OffRamp:["Take 
+the ramp on the {modifier}"," onto {road}"],EndOfRoad:["Turn {modifier} at the 
+end of the road"," onto {road}"],Onto:"onto 
+{road}"},formatOrder:function(n){var i=n%10-1,suffix=["st","nd","rd"];return 
+suffix[i]?n+suffix[i]:n+"th"},ui:{startPlaceholder:"Start",viaPlaceholder:"Via 
+{viaNumber}",endPlaceholder:"End"},units:{meters:"m",kilometers:"km",yards:"yd"
+,miles:"mi",hours:"h",minutes:"min",seconds:"s"}},de:{directions:{N:"Norden",NE
+:"Nordosten",E:"Osten",SE:"Südosten",S:"Süden",SW:"Südwesten",W:"Westen",NW:"No
+rdwesten",SlightRight:"leicht rechts",Right:"rechts",SharpRight:"scharf 
+rechts",SlightLeft:"leicht links",Left:"links",SharpLeft:"scharf 
+links",Uturn:"Wenden"},instructions:{Head:["Richtung {dir}"," auf 
+{road}"],Continue:["Geradeaus Richtung {dir}"," auf 
+{road}"],SlightRight:["Leicht rechts abbiegen"," auf {road}"],Right:["Rechts 
+abbiegen"," auf {road}"],SharpRight:["Scharf rechts abbiegen"," auf 
+{road}"],TurnAround:["Wenden"],SharpLeft:["Scharf links abbiegen"," auf 
+{road}"],Left:["Links abbiegen"," auf {road}"],SlightLeft:["Leicht links 
+abbiegen"," auf {road}"],WaypointReached:["Zwischenhalt 
+erreicht"],Roundabout:["Nehmen Sie die {exitStr} Ausfahrt im Kreisverkehr"," 
+auf {road}"],DestinationReached:["Sie haben ihr Ziel erreicht"],Fork:["An der 
+Kreuzung {modifier}"," auf {road}"],Merge:["Fahren Sie {modifier} weiter"," 
+auf {road}"],OnRamp:["Fahren Sie {modifier} auf die Auffahrt"," auf 
+{road}"],OffRamp:["Nehmen Sie die Ausfahrt {modifier}"," auf 
+{road}"],EndOfRoad:["Fahren Sie {modifier} am Ende der Straße"," auf 
+{road}"],Onto:"auf {road}"},formatOrder:function(n){return 
+n+"."},ui:{startPlaceholder:"Start",viaPlaceholder:"Via {viaNumber}",endPlaceho
+lder:"Ziel"}},sv:{directions:{N:"norr",NE:"nordost",E:"öst",SE:"sydost",S:"syd"
+,SW:"sydväst",W:"väst",NW:"nordväst",SlightRight:"svagt 
+höger",Right:"höger",SharpRight:"skarpt höger",SlightLeft:"svagt 
+vänster",Left:"vänster",SharpLeft:"skarpt 
+vänster",Uturn:"Vänd"},instructions:{Head:["Åk åt {dir}"," till 
+{road}"],Continue:["Fortsätt {dir}"],SlightRight:["Svagt höger"," till 
+{road}"],Right:["Sväng höger"," till {road}"],SharpRight:["Skarpt höger"," 
+till {road}"],TurnAround:["Vänd"],SharpLeft:["Skarpt vänster"," till 
+{road}"],Left:["Sväng vänster"," till {road}"],SlightLeft:["Svagt vänster"," 
+till {road}"],WaypointReached:["Viapunkt nådd"],Roundabout:["Tag {exitStr} 
+avfarten i rondellen"," till {road}"],DestinationReached:["Framme vid resans 
+mål"],Fork:["Tag av {modifier}"," till {road}"],Merge:["Anslut {modifier} "," 
+till {road}"],OnRamp:["Tag påfarten {modifier}"," till {road}"],OffRamp:["Tag 
+avfarten {modifier}"," till {road}"],EndOfRoad:["Sväng {modifier} vid vägens 
+slut"," till {road}"],Onto:"till {road}"},formatOrder:function(n){return["först
+a","andra","tredje","fjärde","femte","sjätte","sjunde","åttonde","nionde","tion
+de"][n-1]},ui:{startPlaceholder:"Från",viaPlaceholder:"Via {viaNumber}",endPlac
+eholder:"Till"}},es:spanish,sp:spanish,nl:{directions:{N:"noordelijke",NE:"noor
+doostelijke",E:"oostelijke",SE:"zuidoostelijke",S:"zuidelijke",SW:"zuidewesteli
+jke",W:"westelijke",NW:"noordwestelijke"},instructions:{Head:["Vertrek in 
+{dir} richting"," de {road} op"],Continue:["Ga in {dir} richting"," de {road} 
+op"],SlightRight:["Volg de weg naar rechts"," de {road} op"],Right:["Ga 
+rechtsaf"," de {road} op"],SharpRight:["Ga scherpe bocht naar rechts"," de 
+{road} op"],TurnAround:["Keer om"],SharpLeft:["Ga scherpe bocht naar links"," 
+de {road} op"],Left:["Ga linksaf"," de {road} op"],SlightLeft:["Volg de weg 
+naar links"," de {road} op"],WaypointReached:["Aangekomen bij 
+tussenpunt"],Roundabout:["Neem de {exitStr} afslag op de rotonde"," de {road} 
+op"],DestinationReached:["Aangekomen op 
+eindpunt"]},formatOrder:function(n){if(n===1||n>=20){return 
+n+"ste"}else{return 
+n+"de"}},ui:{startPlaceholder:"Vertrekpunt",viaPlaceholder:"Via {viaNumber}",en
+dPlaceholder:"Bestemming"}},fr:{directions:{N:"nord",NE:"nord-est",E:"est",SE:"
+sud-est",S:"sud",SW:"sud-ouest",W:"ouest",NW:"nord-ouest"},instructions:{Head:[
+"Tout droit au {dir}"," sur {road}"],Continue:["Continuer au {dir}"," sur 
+{road}"],SlightRight:["Légèrement à droite"," sur {road}"],Right:["A droite"," 
+sur {road}"],SharpRight:["Complètement à droite"," sur 
+{road}"],TurnAround:["Faire demi-tour"],SharpLeft:["Complètement à gauche"," 
+sur {road}"],Left:["A gauche"," sur {road}"],SlightLeft:["Légèrement à 
+gauche"," sur {road}"],WaypointReached:["Point d'étape 
+atteint"],Roundabout:["Au rond-point, prenez la {exitStr} sortie"," sur 
+{road}"],DestinationReached:["Destination 
+atteinte"]},formatOrder:function(n){return 
+n+"º"},ui:{startPlaceholder:"Départ",viaPlaceholder:"Intermédiaire {viaNumber}"
+,endPlaceholder:"Arrivée"}},it:{directions:{N:"nord",NE:"nord-est",E:"est",SE:"
+sud-est",S:"sud",SW:"sud-ovest",W:"ovest",NW:"nord-ovest"},instructions:{Head:[
+"Dritto verso {dir}"," su {road}"],Continue:["Continuare verso {dir}"," su 
+{road}"],SlightRight:["Mantenere la destra"," su {road}"],Right:["A destra"," 
+su {road}"],SharpRight:["Strettamente a destra"," su 
+{road}"],TurnAround:["Fare inversione di marcia"],SharpLeft:["Strettamente a 
+sinistra"," su {road}"],Left:["A sinistra"," sur 
+{road}"],SlightLeft:["Mantenere la sinistra"," su 
+{road}"],WaypointReached:["Punto di passaggio raggiunto"],Roundabout:["Alla 
+rotonda, prendere la {exitStr} uscita"],DestinationReached:["Destinazione 
+raggiunta"]},formatOrder:function(n){return 
+n+"º"},ui:{startPlaceholder:"Partenza",viaPlaceholder:"Intermedia {viaNumber}",
+endPlaceholder:"Destinazione"}},pt:{directions:{N:"norte",NE:"nordeste",E:"lest
+e",SE:"sudeste",S:"sul",SW:"sudoeste",W:"oeste",NW:"noroeste",SlightRight:"curv
+a ligeira a direita",Right:"direita",SharpRight:"curva fechada a 
+direita",SlightLeft:"ligeira a esquerda",Left:"esquerda",SharpLeft:"curva 
+fechada a esquerda",Uturn:"Meia volta"},instructions:{Head:["Siga {dir}"," na 
+{road}"],Continue:["Continue {dir}"," na {road}"],SlightRight:["Curva ligeira 
+a direita"," na {road}"],Right:["Curva a direita"," na 
+{road}"],SharpRight:["Curva fechada a direita"," na 
+{road}"],TurnAround:["Retorne"],SharpLeft:["Curva fechada a esquerda"," na 
+{road}"],Left:["Curva a esquerda"," na {road}"],SlightLeft:["Curva ligueira a 
+esquerda"," na {road}"],WaypointReached:["Ponto de interesse 
+atingido"],Roundabout:["Pegue a {exitStr} saída na rotatória"," na 
+{road}"],DestinationReached:["Destino atingido"],Fork:["Na encruzilhada, vire 
+a {modifier}"," na {road}"],Merge:["Entre à {modifier}"," na 
+{road}"],OnRamp:["Vire {modifier} na rampa"," na {road}"],OffRamp:["Entre na 
+rampa na {modifier}"," na {road}"],EndOfRoad:["Vire {modifier} no fim da 
+rua"," na {road}"],Onto:"na {road}"},formatOrder:function(n){return 
+n+"º"},ui:{startPlaceholder:"Origem",viaPlaceholder:"Intermédio {viaNumber}",en
+dPlaceholder:"Destino"}},sk:{directions:{N:"sever",NE:"serverovýchod",E:"východ
+",SE:"juhovýchod",S:"juh",SW:"juhozápad",W:"západ",NW:"serverozápad"},instructi
+ons:{Head:["Mierte na {dir}"," na {road}"],Continue:["Pokračujte na {dir}"," 
+na {road}"],SlightRight:["Mierne doprava"," na {road}"],Right:["Doprava"," na 
+{road}"],SharpRight:["Prudko doprava"," na {road}"],TurnAround:["Otočte 
+sa"],SharpLeft:["Prudko doľava"," na {road}"],Left:["Doľava"," na 
+{road}"],SlightLeft:["Mierne doľava"," na {road}"],WaypointReached:["Ste v 
+prejazdovom bode."],Roundabout:["Odbočte na {exitStr} výjazde"," na 
+{road}"],DestinationReached:["Prišli ste do 
+cieľa."]},formatOrder:function(n){var i=n%10-1,suffix=[".",".","."];return suff
+ix[i]?n+suffix[i]:n+"."},ui:{startPlaceholder:"Začiatok",viaPlaceholder:"Cez {v
+iaNumber}",endPlaceholder:"Koniec"}},el:{directions:{N:"βόρεια",NE:"βορειοανατο
+λικά",E:"ανατολικά",SE:"νοτιοανατολικά",S:"νότια",SW:"νοτιοδυτικά",W:"δυτικά",N
+W:"βορειοδυτικά"},instructions:{Head:["Κατευθυνθείτε {dir}"," στην 
+{road}"],Continue:["Συνεχίστε {dir}"," στην {road}"],SlightRight:["Ελαφρώς 
+δεξιά"," στην {road}"],Right:["Δεξιά"," στην {road}"],SharpRight:["Απότομη 
+δεξιά στροφή"," στην {road}"],TurnAround:["Κάντε 
+αναστροφή"],SharpLeft:["Απότομη αριστερή στροφή"," στην 
+{road}"],Left:["Αριστερά"," στην {road}"],SlightLeft:["Ελαφρώς αριστερά"," 
+στην {road}"],WaypointReached:["Φτάσατε στο σημείο 
+αναφοράς"],Roundabout:["Ακολουθήστε την {exitStr} έξοδο στο κυκλικό κόμβο"," 
+στην {road}"],DestinationReached:["Φτάσατε στον προορισμό 
+σας"]},formatOrder:function(n){return 
+n+"º"},ui:{startPlaceholder:"Αφετηρία",viaPlaceholder:"μέσω 
+{viaNumber}",endPlaceholder:"Προορισμός"}},ca:{
+node_modules\leaflet-routing-machine\src\formatter.js:92:		formatInstruction: 
+function(instr, i) {
+node_modules\leaflet-routing-machine\src\itinerary.js:149:				text = 
+this._formatter.formatInstruction(instr, i);
+
+

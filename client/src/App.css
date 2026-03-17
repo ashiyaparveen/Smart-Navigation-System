@@ -1,130 +1,200 @@
-body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* Base Styles */
+body {
+  margin: 0;
+  font-family: 'Poppins', Arial, Helvetica, sans-serif;
 }
 
-/* layout */
-
-.app{
-height:100vh;
-display:flex;
-flex-direction:column;
+/* App Layout */
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.layout{
-display:flex;
-flex:1;
+.layout {
+  display: flex;
+  flex: 1;
 }
 
-/* search */
-
-.search-bar{
-position:absolute;
-top:15px;
-left:50%;
-transform:translateX(-50%);
-width:350px;
-background:white;
-border-radius:25px;
-padding:10px 15px;
-display:flex;
-align-items:center;
-box-shadow:0 3px 8px rgba(0,0,0,0.25);
-z-index:1000;
+/* Search Bar */
+.search-bar {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  background: white;
+  border-radius: 25px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
 }
 
-.search-bar input{
-border:none;
-outline:none;
-width:100%;
-font-size:14px;
+.search-bar input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
 }
 
-.search-icon{
-margin-right:10px;
-color:#666;
+.search-icon {
+  margin-right: 10px;
+  color: #666;
 }
 
-/* route panel */
-/* Direction Card (Source - Destination Panel) */
-
-.route-panel{
-position:absolute;
-top:70px;
-left:50%;
-transform:translateX(-50%);
-background:#ffffff;
-padding:12px 15px;
-border-radius:12px;
-display:flex;
-gap:12px;
-align-items:center;
-box-shadow:0 4px 12px rgba(0,0,0,0.25);
-z-index:1000;
-border:1px solid #e5e5e5;
+/* Route Panel */
+.route-panel {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  padding: 12px 15px;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  border: 1px solid #e5e5e5;
 }
 
-/* dropdown styling */
-
-.route-panel select{
-padding:7px 10px;
-border-radius:6px;
-border:1px solid #ccc;
-background:#ffffff;
-font-size:14px;
-outline:none;
-transition:0.2s;
+.route-panel select {
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
 }
 
-.route-panel select:hover{
-border-color:#1a73e8;
+.route-panel select:hover {
+  border-color: #1a73e8;
 }
 
-/* icon */
-
-.route-icon{
-color:#1a73e8;
-font-size:18px;
-}
-/* sidebar */
-
-.locations-panel{
-width:280px;
-background:white;
-border-right:1px solid #ddd;
-overflow-y:auto;
+.route-icon {
+  color: #1a73e8;
+  font-size: 18px;
 }
 
-.location-card{
-padding:12px;
-border-bottom:1px solid #eee;
-cursor:pointer;
+/* Sidebar Locations Panel */
+.locations-panel {
+  width: 280px;
+  background: white;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
 }
 
-.location-card:hover{
-background:#f5f7fa;
+.location-card {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
 }
 
-.location-card h4{
-margin:0;
+.location-card:hover {
+  background: #f5f7fa;
 }
 
-.location-card p{
-margin:3px 0 0 0;
-font-size:13px;
-color:#666;
+.location-card h4 {
+  margin: 0;
 }
 
-/* map */
-
-.map{
-flex:1;
-height:100vh;
-}
-.leaflet-routing-container{
-  background-color: #ffffff !important;
-  padding:20px !important;
-  border-radius:12px !important;
-  box-shadow:0 4px 12px rgba(0,0,0,0.25) !important;
+.location-card p {
+  margin: 3px 0 0 0;
   font-size: 13px;
+  color: #666;
+}
+
+/* Map */
+.map {
+  flex: 1;
+  height: 100vh;
+}
+
+.leaflet-routing-container {
+  background-color: #ffffff !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+  font-size: 13px;
+}
+
+/* Voice Directions Button */
+.voice-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 20px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: background 0.2s ease;
+}
+
+.voice-btn:hover {
+  background: #155ab6;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .locations-panel {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 5px;
+  }
+
+  .location-card {
+    min-width: 150px;
+    margin-right: 10px;
+    margin-bottom: 0;
+  }
+
+  .map {
+    flex: 1;
+    height: calc(100vh - 200px); /* adjust for search + route + locations */
+  }
+
+  .search-bar,
+  .route-panel {
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 10px;
+    flex-wrap: wrap;
+  }
+
+  .search-bar input,
+  .route-panel select {
+    flex: 1 1 100%;
+    margin-top: 5px;
+  }
+
+  .voice-btn {
+    bottom: 15px;
+    right: 15px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
 }
