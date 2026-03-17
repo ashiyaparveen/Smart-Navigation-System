@@ -368,11 +368,9 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
   width: 18px;
   height: 18px;
   border-radius: 50%;
-
   background: rgb(25, 204, 254);
   z-index: 1;
 }
@@ -494,7 +492,7 @@ body {
     left: 50%;
     right: auto;
     transform: translateX(-50%);
-    width: 90%;
+    width: 70%;
     display: flex;
     justify-content: center;
   }

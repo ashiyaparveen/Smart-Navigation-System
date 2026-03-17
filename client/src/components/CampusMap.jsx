@@ -142,11 +142,11 @@ export default function CampusMap({
       {/* MARKERS */}
       {locations.map((loc) => {
         const isActive =
-          source?.id === loc.id || destination?.id === loc.id;
+          source?._id === loc._id || destination?._id === loc._id;
 
         return (
           <Marker
-            key={loc.id}
+            key={loc._id}
             position={[loc.lat, loc.lng]}
             icon={getIcon(loc.category, isActive)}
             eventHandlers={{

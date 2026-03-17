@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CampusMap from "./components/CampusMap";
 import VoiceButton from "./components/VoiceButton";
-import locations from "./data/locations";
 import {
   FaSearch,
   FaBars,
@@ -15,6 +14,7 @@ import {
   FaHospital,
 } from "react-icons/fa";
 import "./App.css";
+import { getLocations } from "./api/axios";
 
 export default function App() {
   const [search, setSearch] = useState("");
@@ -23,6 +23,7 @@ export default function App() {
   const [category, setCategory] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [instructions, setInstructions] = useState({ steps: [] });
+  const [locations, setLocations] = useState([]);
 
   const filtered = locations
     .filter((loc) =>
@@ -35,26 +36,45 @@ export default function App() {
 
   const categories = Array.from(new Set(locations.map((loc) => loc.category))).sort();
 
-const getCategoryIcon = (category) => {
-  switch (category) {
-    case "Campus Center":
-      return <FaUniversity />;
-    case "Religious":
-      return <FaMapMarkerAlt />;
-    case "Academic":
-      return <FaUniversity />;
-    case "Administrative":
-      return <FaBuilding />;
-    case "Healthcare":
-      return <FaHospital />;
-    case "Recreational":
-      return <FaFutbol />;
-    case "Residential":
-      return <FaHome />;
-    default:
-      return <FaMapMarkerAlt />;
-  }
-};
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "Campus Center":
+        return <FaUniversity />;
+      case "Religious":
+        return <FaMapMarkerAlt />;
+      case "Academic":
+        return <FaUniversity />;
+      case "Administrative":
+        return <FaBuilding />;
+      case "Healthcare":
+        return <FaHospital />;
+      case "Recreational":
+        return <FaFutbol />;
+      case "Residential":
+        return <FaHome />;
+      default:
+        return <FaMapMarkerAlt />;
+    }
+  };
+
+  useEffect(() => {
+    fetchLocations();
+  }, []);
+
+  const fetchLocations = async () => {
+    try {
+      const res = await getLocations();
+      const formatted = res.data.map((loc) => ({
+      ...loc,
+      lat: loc.location.coordinates[1],
+      lng: loc.location.coordinates[0], 
+    }));
+
+    setLocations(formatted);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    }
+  };
 
   return (
     <div className="app">
@@ -99,7 +119,7 @@ const getCategoryIcon = (category) => {
           <select id="source" value={source} onChange={(e) => setSource(e.target.value)}>
             <option value="">Select Source</option>
             {filtered.map((loc) => (
-              <option key={loc.id} value={loc.name}>
+              <option key={loc._id} value={loc.name}>
                 {loc.name}
               </option>
             ))}
@@ -111,7 +131,7 @@ const getCategoryIcon = (category) => {
           <select id="destination" value={destination} onChange={(e) => setDestination(e.target.value)}>
             <option value="">Select Destination</option>
             {filtered.map((loc) => (
-              <option key={loc.id} value={loc.name}>
+              <option key={loc._id} value={loc.name}>
                 {loc.name}
               </option>
             ))}
