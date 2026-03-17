@@ -22,6 +22,7 @@ export default function App() {
   const [destination, setDestination] = useState("");
   const [category, setCategory] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [visibleSteps, setVisibleSteps] = useState(0);
   const [instructions, setInstructions] = useState({ steps: [] });
   const [locations, setLocations] = useState([]);
 
@@ -75,6 +76,26 @@ export default function App() {
       console.error("Error fetching locations:", error);
     }
   };
+
+  useEffect(() => {
+    if (!instructions.steps || instructions.steps.length === 0) {
+      setVisibleSteps(0);
+      return;
+    }
+
+    setVisibleSteps(0);
+
+    let current = 0;
+    const interval = setInterval(() => {
+      current += 1;
+      setVisibleSteps(current);
+      if (current >= instructions.steps.length) {
+        clearInterval(interval);
+      }
+    }, 600);
+
+    return () => clearInterval(interval);
+  }, [instructions.steps]);
 
   return (
     <div className="app">
@@ -142,9 +163,14 @@ export default function App() {
           <h3>Instructions</h3>
           {sourceLocation && destinationLocation ? (
             instructions.steps.length > 0 ? (
-              <ol>
+              <ol className="sidebar__instructions">
                 {instructions.steps.map((step, idx) => (
-                  <li key={idx}>{step}</li>
+                  <li
+                    key={idx}
+                    style={{ animation: `fadeIn 2s forwards`, animationDelay: `${idx * 2}s` }}
+                  >
+                    {step}
+                  </li>
                 ))}
               </ol>
             ) : (
