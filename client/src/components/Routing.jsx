@@ -20,6 +20,8 @@ export default function Routing({ source, destination, setInstructions }) {
       show: false,
     }).addTo(map);
 
+    //routing.getContainer().style.display = 'none';     //remove defualt container
+
     routing.on("routesfound", function (e) {
       const route = e.routes[0];
 

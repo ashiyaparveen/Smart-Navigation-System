@@ -155,40 +155,30 @@ body {
   }
 
   .locations-panel {
-    width: 100%;
-    height: 120px;
-    display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
-    border-right: none;
-    border-bottom: 1px solid #ddd;
-    padding: 10px 5px;
-  }
-
-  .location-card {
-    min-width: 150px;
-    margin-right: 10px;
-    margin-bottom: 0;
+    display:none;
   }
 
   .map {
     flex: 1;
-    height: calc(100vh - 200px); /* adjust for search + route + locations */
+    height: calc(100vh - 300px); 
   }
 
   .search-bar,
   .route-panel {
-    width: 90%;
+    width: 70%;
     left: 50%;
     transform: translateX(-50%);
     padding: 8px 10px;
-    flex-wrap: wrap;
   }
 
   .search-bar input,
   .route-panel select {
     flex: 1 1 100%;
     margin-top: 5px;
+  }
+
+  .leaflet-routing-container {
+    display:none !important; 
   }
 
   .voice-btn {
