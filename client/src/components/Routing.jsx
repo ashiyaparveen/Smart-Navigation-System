@@ -10,17 +10,19 @@ export default function Routing({ source, destination, setInstructions }) {
     if (!source || !destination) return;
 
     const routing = L.Routing.control({
-      waypoints: [
+    waypoints: [
         L.latLng(source.lat, source.lng),
         L.latLng(destination.lat, destination.lng),
-      ],
-      lineOptions: { styles: [{ color: "#1a73e8", weight: 5 }] },
-      addWaypoints: false,
-      draggableWaypoints: false,
-      show: false,
+    ],
+    lineOptions: { styles: [{ color: "#1a73e8", weight: 5 }] },
+
+    addWaypoints: false,
+    draggableWaypoints: false,
+    show: false,
+    createMarker: () => null,
     }).addTo(map);
 
-    //routing.getContainer().style.display = 'none';     //remove defualt container
+    routing.getContainer().style.display = 'none';     
 
     routing.on("routesfound", function (e) {
       const route = e.routes[0];

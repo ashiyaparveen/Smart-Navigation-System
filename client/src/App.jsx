@@ -1,78 +1,162 @@
-// App.jsx
 import React, { useState } from "react";
 import CampusMap from "./components/CampusMap";
 import VoiceButton from "./components/VoiceButton";
 import locations from "./data/locations";
-import { FaSearch, FaRoute } from "react-icons/fa";
+import {
+  FaSearch,
+  FaBars,
+  FaTimes, 
+  FaUniversity,
+  FaHome,
+  FaUtensils,
+  FaFutbol,
+  FaMapMarkerAlt,
+  FaBuilding,
+  FaHospital,
+} from "react-icons/fa";
 import "./App.css";
 
 export default function App() {
   const [search, setSearch] = useState("");
   const [source, setSource] = useState("");
   const [destination, setDestination] = useState("");
+  const [category, setCategory] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [instructions, setInstructions] = useState({ steps: [] });
 
-  const filtered = locations.filter((loc) =>
-    loc.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = locations
+    .filter((loc) =>
+      loc.name.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter((loc) => (category ? loc.category === category : true));
 
   const sourceLocation = locations.find((loc) => loc.name === source);
   const destinationLocation = locations.find((loc) => loc.name === destination);
 
+  const categories = Array.from(new Set(locations.map((loc) => loc.category))).sort();
+
+const getCategoryIcon = (category) => {
+  switch (category) {
+    case "Campus Center":
+      return <FaUniversity />;
+    case "Religious":
+      return <FaMapMarkerAlt />;
+    case "Academic":
+      return <FaUniversity />;
+    case "Administrative":
+      return <FaBuilding />;
+    case "Healthcare":
+      return <FaHospital />;
+    case "Recreational":
+      return <FaFutbol />;
+    case "Residential":
+      return <FaHome />;
+    default:
+      return <FaMapMarkerAlt />;
+  }
+};
+
   return (
     <div className="app">
-      {/* Search Bar */}
-      <div className="search-bar">
-        <FaSearch className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search campus buildings..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <button
+        className="hamburger"
+        onClick={() => setSidebarOpen((open) => !open)}
+        aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+      >
+        {sidebarOpen ? <FaTimes /> : <FaBars />}
+      </button>
 
-      {/* Route Panel */}
-      <div className="route-panel">
-        <FaRoute className="route-icon" />
-        <select value={source} onChange={(e) => setSource(e.target.value)}>
-          <option value="">Select Source</option>
-          {locations.map((loc) => (
-            <option key={loc.id}>{loc.name}</option>
-          ))}
-        </select>
+      <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <div className="sidebar__header">
+          <h2>Navigation</h2>
+        </div>
+        <div className="sidebar__section">
+          <label>Category</label>
+          <div className="category-icons">
+            <button
+              className={!category ? "active" : ""}
+              onClick={() => setCategory("")}
+            >
+              All
+            </button>
 
-        <select value={destination} onChange={(e) => setDestination(e.target.value)}>
-          <option value="">Select Destination</option>
-          {locations.map((loc) => (
-            <option key={loc.id}>{loc.name}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="layout">
-        <div className="locations-panel">
-          {filtered.map((loc) => (
-            <div key={loc.id} className="location-card">
-              <h4>{loc.name}</h4>
-              <p>{loc.category}</p>
-            </div>
-          ))}
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={category === cat ? "active" : ""}
+                onClick={() => setCategory(cat)}
+                title={cat}
+              >
+                {getCategoryIcon(cat)}
+                <span>{cat}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <CampusMap
-          locations={filtered}
-          source={sourceLocation}
-          destination={destinationLocation}
-          setInstructions={setInstructions}
-        />
+        <div className="sidebar__section">
+          <label htmlFor="source">Source</label>
+          <select id="source" value={source} onChange={(e) => setSource(e.target.value)}>
+            <option value="">Select Source</option>
+            {filtered.map((loc) => (
+              <option key={loc.id} value={loc.name}>
+                {loc.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="sidebar__section">
+          <label htmlFor="destination">Destination</label>
+          <select id="destination" value={destination} onChange={(e) => setDestination(e.target.value)}>
+            <option value="">Select Destination</option>
+            {filtered.map((loc) => (
+              <option key={loc.id} value={loc.name}>
+                {loc.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="sidebar__section sidebar__instructions">
+          <h3>Instructions</h3>
+          {sourceLocation && destinationLocation ? (
+            instructions.steps.length > 0 ? (
+              <ol>
+                {instructions.steps.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ol>
+            ) : (
+              <p className="muted">Calculating route...</p>
+            )
+          ) : (
+            <p className="muted">Select source + destination to see directions.</p>
+          )}
+        </div>
       </div>
 
-      {/* Voice Button */}
+      <CampusMap
+        locations={filtered}
+        source={sourceLocation}
+        destination={destinationLocation}
+        setInstructions={setInstructions}
+      />
+
+      <div className={`top-right ${sidebarOpen ? "shifted" : ""}`}>
+        <div className="search-bar">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search campus buildings..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
       {sourceLocation && destinationLocation && (
-        <VoiceButton
-          displayedInstructions={instructions.steps}
-        />
+        <VoiceButton displayedInstructions={instructions.steps} />
       )}
     </div>
   );
