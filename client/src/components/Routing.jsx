@@ -1,3 +1,4 @@
+// Routing.jsx
 import { useEffect } from "react";
 import L from "leaflet";
 import "leaflet-routing-machine";
@@ -9,41 +10,36 @@ export default function Routing({ source, destination, setInstructions }) {
   useEffect(() => {
     if (!source || !destination) return;
 
-    const routing = L.Routing.control({
-    waypoints: [
-        L.latLng(source.lat, source.lng),
-        L.latLng(destination.lat, destination.lng),
-    ],
-    lineOptions: { styles: [{ color: "#1a73e8", weight: 5 }] },
+    const from = L.latLng(source.lat, source.lng);
+    const to = L.latLng(destination.lat, destination.lng);
 
-    addWaypoints: false,
-    draggableWaypoints: false,
-    show: false,
-    createMarker: () => null,
+    const routingControl = L.Routing.control({
+      waypoints: [from, to],
+      routeWhileDragging: true,
+      showAlternatives: false,
+      addWaypoints: false,
+      draggableWaypoints: false,
+      createMarker: function() { return null; },
     }).addTo(map);
 
-    routing.getContainer().style.display = 'none';     
+    routingControl.getContainer().style.display = 'none'; 
 
-    routing.on("routesfound", function (e) {
-      const route = e.routes[0];
+    routingControl.on("routesfound", function (e) {
+        const route = e.routes[0];
+        if (!route) return;
 
-      // total route distance/time
-      const totalDistance = route.summary.totalDistance; 
-      const totalTime = route.summary.totalTime;
+        const steps = route.instructions.map((inst) => {
+            const text = inst.text || ""; 
+            const distance = inst.distance ? (inst.distance / 1000).toFixed(2) + " km" : "";
+            return `${text} (${distance})`;
+        });
 
-      // Match the displayed routing instructions formatting used by Leaflet Routing Machine
-      const formatter = new L.Routing.Formatter();
+        setInstructions({ steps });
+        });
 
-      const steps = route.instructions.map((inst) => {
-        const instructionText = formatter.formatInstruction(inst);
-        const distanceText = inst.distance ? formatter.formatDistance(inst.distance) : "";
-        return distanceText ? `${instructionText} in ${distanceText}` : instructionText;
-      });
-
-      setInstructions({ steps, totalTime, totalDistance });
-    });
-
-    return () => map.removeControl(routing);
+    return () => {
+      if (routingControl) map.removeControl(routingControl);
+    };
   }, [source, destination, map, setInstructions]);
 
   return null;

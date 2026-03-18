@@ -17,7 +17,7 @@ export default function VoiceButton({ displayedInstructions }) {
   };
 
   return (
-    <button className="voice-btn" onClick={speakDirections}>
+    <button className="voice-btn" onClick={speakDirections} title="Voice assistant">
       <FaVolumeUp />
     </button>
   );
