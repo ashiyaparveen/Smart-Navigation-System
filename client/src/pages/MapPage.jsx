@@ -13,6 +13,7 @@ import {
   FaMapMarkerAlt,
   FaBuilding,
   FaHospital,
+  FaLocationArrow,
 } from "react-icons/fa";
 import "../App.css";
 import { getLocations } from "../api/axios";
@@ -209,6 +210,16 @@ export default function MapPage() {
             <FaRoute />
           </button>
         )}
+      </div>
+
+      <div className="live-location-container">
+        <button
+          className={`live-btn ${tracking ? "active" : ""}`}
+          onClick={() => setTracking(!tracking)}
+          title="Live Location"
+        >
+          <FaLocationArrow />
+        </button>
       </div>
 
       {/* Search bar */}
